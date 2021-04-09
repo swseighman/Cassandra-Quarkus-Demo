@@ -172,6 +172,8 @@ __  ____  __  _____   ___  __ ____  ______
 2021-04-09 13:34:09,038 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
 
 ```
+You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html) or [http://localhost:8080/reactive-fruits.html](http://localhost:8080/reactive-fruits.html) and access the application as noted earlier.
+
 Since you're undoubtedly curious, let's compare the JAR and native image file sizes:
 
 ```
@@ -200,9 +202,6 @@ $ ls -lah target/cassandra-quarkus-quickstart-1.0.1*
 -rwxr-xr-x 1 sseighma sseighma  73M Apr  9 12:44 target/cassandra-quarkus-quickstart-1.0.1-runne~
 -rw-r--r-- 1 sseighma sseighma  35K Apr  9 12:42 target/cassandra-quarkus-quickstart-1.0.1.jar
 ```
-
-
-You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html) or [http://localhost:8080/reactive-fruits.html](http://localhost:8080/reactive-fruits.html) and access the application as noted earlier.
 
 ### Creating Container Images
 
