@@ -122,7 +122,7 @@ You can also add fruit to the database via the UI:
 ![](images/Reactive-UI-2.png)
 
 ### Application Health Check
-You can access the `/health` endpoint of your application to retrieve information about the connection validation status:
+You can access the `/q/health` endpoint of your application to retrieve information about the connection validation status:
 
 ```
 $ http http://localhost:8080/q/health --body
@@ -151,7 +151,7 @@ To build a native image, execute the following command:
 $ mvn clean package -Dnative
 ```
 
-Once the compilation is finished, you can run the native executable by executing the following command:
+Once the compilation has finished, you can run the native executable by executing the following command:
 
 ```
 $ ./target/cassandra-quarkus-quickstart-*-runner
@@ -198,9 +198,13 @@ You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080
 
 ### Create Container Images
 
-There are a few options for building container images for the application.
+There are a few options for building container images for the application:
 
-First, let's build a container using the **fat-jar** version of the application:
+* Using the uber-jar 
+* Using Native Image
+* Using a Distroless Image
+
+First, let's build a container using the **uber-jar** version of the application:
 
 ```
 $ docker build -f src/main/docker/Dockerfile.jvm -t quarkus/cassandra-client-jvm .
@@ -223,7 +227,7 @@ __  ____  __  _____   ___  __ ____  ______
 ```
 Notice it starts in ~**800ms**.
 
-Now let's build a container with the native image executable:
+Now let's build a container with the **native image** executable:
 
 ```
 $ docker build -f src/main/docker/Dockerfile.native -t quarkus/cassandra-client-native .
@@ -242,7 +246,7 @@ __  ____  __  _____   ___  __ ____  ______
 ```
 Notice the native image version starts considerably faster at ~**15ms**.
 
-If we use the `upx` compressed version of the native image executable, the container image is reduced in size from **179MB** to **132MB**.
+If we use the `upx` compressed version of the native image executable, the container image is reduced in size from **179MB** to **132MB** with little impact on startup times.
 ```
 $ $ docker images | grep native
 quarkus/cassandra-client-native     latest    d51068444298   14 seconds ago   132MB
@@ -257,7 +261,7 @@ $ docker build -f src/main/docker/Dockerfile.distroless -t quarkus/cassandra-cli
 Here we compare the image size of each option:
 ```
 $ docker images
-quarkus/cassandra-client-distroless    latest      ae519318cd36   2 hours ago    96.2MB
+quarkus/cassandra-client-distroless    latest      ae519318cd36   2 hours ago    96MB
 quarkus/cassandra-client-native        latest      1077993b8418   2 hours ago    132MB
 quarkus/cassandra-client-jvm           latest      7043af3565af   2 hours ago    222MB
 ```
