@@ -55,23 +55,26 @@ cqlsh> select * from k1.fruit;
 (4 rows)
 cqlsh> exit
 ```
-Run `mvn clean package` and then to start the application:
+To build the project, run:
+```
+$ mvn clean package
+```
+To start the `jar` application, execute:
 ```
 $ java -jar ./target/cassandra-quarkus-quickstart-*-runner.jar
 ```
 
-Or run the application in dev mode: `mvn clean quarkus:dev`.
-
+Or run the application in dev mode: 
+```
+$ mvn clean quarkus:dev
+```
+Add some data to the database:
 ```
 $ curl --header "Content-Type: application/json" --request POST --data '{"name":"apple","description":"red and tasty"}' http://localhost:8080/fruits
 ```
-
+Then check to make certain it was posted:
 ```
-$ http http://localhost:8080/fruits
-HTTP/1.1 200 OK
-Content-Length: 197
-Content-Type: application/json
-
+$ http http://localhost:8080/fruits --body
 [
     {
         "description": "red and tasty",
@@ -80,12 +83,23 @@ Content-Type: application/json
 ]
 ```
 
-```
-$ http http://localhost:8080/q/health
-HTTP/1.1 200 OK
-content-length: 410
-content-type: application/json; charset=UTF-8
+To access the REST UI, browse to: [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html)
 
+![](images/REST-UI.png)
+
+To access the Reactive UI, browse to: 
+[http://localhost:8080/reactive-fruits.html](http://localhost:8080/reactive-fruits.html)
+
+![](images/Reactive-UI-1.png)
+
+You can also add fruit to the database via the UI:
+
+![](images/Reactive-UI-2.png)
+
+You can also access the `/health` endpoint of your application to retrieve information about the connection validation status:
+
+```
+$ http http://localhost:8080/q/health --body
 {
     "checks": [
         {
@@ -103,18 +117,6 @@ content-type: application/json; charset=UTF-8
     "status": "UP"
 }
 ```
-To access the REST UI, browse to: [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html)
-
-![](//wsl$/Ubuntu/home/sseighma/code/cassandra-quarkus/Cassandra-Quarkus-Demo/images/REST-UI.png)
-
-To access the Reactive UI, browse to: 
-[http://localhost:8080/reactive-fruits.html](http://localhost:8080/reactive-fruits.html)
-
-![](//wsl$/Ubuntu/home/sseighma/code/cassandra-quarkus/Cassandra-Quarkus-Demo/images/Reactive-UI-1.png)
-
-You can also add fruit to the database via the UI:
-
-![](//wsl$/Ubuntu/home/sseighma/code/cassandra-quarkus/Cassandra-Quarkus-Demo/images/Reactive-UI-2.png)
 
 ### Create a Native Image Executable
 To build a native image, execute the following command:
