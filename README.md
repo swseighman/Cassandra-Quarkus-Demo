@@ -8,11 +8,11 @@ In this guide, we'll demonstrate how you can create a REST service to access a C
 This example is based on an article that appears [here](https://quarkus.io/version/1.7/guides/cassandra).
 
 
-### Connecting to Apache Cassandra or DataStax Enterprise (DSE)
+### Connecting to Apache Cassandra
 
 The main properties to configure are: `contact-points`, to access the Cassandra database; `local-datacenter`, which is required by the driver and optionally, the `keyspace` to bind.
 
-A sample configuration should look like this:
+A sample configuration (in **src/main/resources/application.properties**) should follow this format:
 
 ```
 quarkus.cassandra.contact-points={cassandra_ip}:9042
@@ -35,7 +35,8 @@ quarkus.cassandra.local-datacenter=datacenter1
 quarkus.cassandra.keyspace=k1
 ```
 
-Start the Cassandra database container:
+### Running the Cassandra Database
+For simplicity, we'll use a container to run the Cassandra database.  To start the Cassandra database container, execute:
 ```
 $ docker run --name local-cassandra-instance -p 9042:9042 -d cassandra
 ```
@@ -63,6 +64,8 @@ cqlsh> select * from k1.fruit;
 (4 rows)
 cqlsh> exit
 ```
+
+### Building the Project
 To build the project, run:
 ```
 $ mvn clean package
@@ -90,6 +93,8 @@ Or run the application in dev mode:
 ```
 $ mvn clean quarkus:dev
 ```
+
+### Adding Data and Accessing the UI
 Add some data to the database:
 ```
 $ http POST http://localhost:8080/fruits name="apple" description="red and tasty"
