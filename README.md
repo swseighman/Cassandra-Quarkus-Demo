@@ -198,7 +198,7 @@ You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080
 
 ### Create Container Images
 
-There are a few options for building container images for the application:
+We'll demonstrate a few options to build container images for the application:
 
 * Using the uber-jar 
 * Using Native Image
@@ -248,7 +248,7 @@ Notice the native image version starts considerably faster at ~**15ms**.
 
 If we use the `upx` compressed version of the native image executable, the container image is reduced in size from **179MB** to **132MB** with little impact on startup times.
 ```
-$ $ docker images | grep native
+$ docker images | grep native
 quarkus/cassandra-client-native     latest    d51068444298   14 seconds ago   132MB
 ```
 
