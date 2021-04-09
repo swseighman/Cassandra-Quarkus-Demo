@@ -14,12 +14,14 @@
 # docker run -i --rm -p 8080:8080 quarkus/cassandra-client-jvm
 #
 ###
-FROM fabric8/java-alpine-openjdk8-jre
-#ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0"
-#ENV AB_ENABLED=jmx_exporter
-#COPY target/cassandra-quarkus-quickstart-1.0.1-native-image-source-jar/lib/* /deployments/lib
+#FROM container-registry.oracle.com/java/jdk:11-oraclelinux8
+#FROM oraclejdk11-slim
+FROM fabric8/java-alpine-openjdk11-jre
+
+ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+ENV AB_ENABLED=jmx_exporter
+
 #COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
-#COPY target/*-runner.jar /deployments/app.jar
 ENTRYPOINT [ "/deployments/run-java.sh" ]

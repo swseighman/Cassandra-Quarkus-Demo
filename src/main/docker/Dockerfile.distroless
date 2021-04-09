@@ -14,7 +14,7 @@
 # docker run -i --rm -p 8080:8080 quarkus/cassandra-client-distroless
 #
 ###
-FROM ghcr.io/graalvm/graalvm-ce:java8-21.0.0 as graalvm
+FROM ghcr.io/graalvm/graalvm-ce:java11-21.0.0 as graalvm
 
 RUN microdnf -y install wget unzip zip \
     && gu install native-image
@@ -51,5 +51,5 @@ COPY --from=graalvm /tmp/ssl/ /
 ENV LD_LIBRARY_PATH /
 
 EXPOSE 8080
-COPY --from=graalvm /home/app/cassandra/target/cassandra-quarkus-quickstart-1.0.1-runner app
+COPY --from=graalvm /home/app/cassandra/target/*-runner app
 ENTRYPOINT ["/app"]

@@ -14,9 +14,13 @@
 # docker run -i --rm -p 8080:8080 quarkus/cassandra-client
 #
 ###
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+#FROM registry.access.redhat.com/ubi8/ubi-minimal
+FROM container-registry.oracle.com/os/oraclelinux:8-slim
+
 WORKDIR /work/
+
 COPY target/*-runner /work/application
 RUN chmod 775 /work
+
 EXPOSE 8080
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
