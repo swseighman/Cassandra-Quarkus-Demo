@@ -10,7 +10,10 @@ This example is based on an article that appears [here](https://quarkus.io/versi
 
 ### Connecting to Apache Cassandra
 
-The main properties to configure are: `contact-points`, to access the Cassandra database; `local-datacenter`, which is required by the driver and optionally, the `keyspace` to bind.
+To connect to the Cassandra database, there are three primary properties to configure: 
+* `contact-points` to access the Cassandra database
+* `local-datacenter` which is required by the driver
+* Optionally, the `keyspace` to bind
 
 A sample configuration (in **src/main/resources/application.properties**) should follow this format:
 
@@ -41,7 +44,7 @@ For simplicity, we'll use a container to run the Cassandra database.  To start t
 $ docker run --name local-cassandra-instance -p 9042:9042 -d cassandra
 ```
 
-Next you need to create the keyspace and table that will be used by your application. If you are using Docker, run the following commands:
+Next you need to create the keyspace and table that will be used by the application. If you are using Docker (`podman` is good alternative), run the following commands:
 
 ```
 $ docker exec -it local-cassandra-instance cqlsh -e "CREATE KEYSPACE IF NOT EXISTS k1 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}"
@@ -102,7 +105,7 @@ HTTP/1.1 204 No Content
 ```
 **NOTE:** These examples use [http](https://httpie.io/) but of course, `curl` will work too.
 
-Then check to make certain it posted properly:
+Then check to make certain the data posted properly:
 ```
 $ http http://localhost:8080/fruits --body
 [
@@ -169,7 +172,7 @@ __  ____  __  _____   ___  __ ____  ______
 2021-04-09 13:34:09,038 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
 
 ```
-Comparing the JAR and native image file sizes:
+Since you're undoubtedly curious, let's compare the JAR and native image file sizes:
 
 ```
 $ ls -lah target/cassandra-quarkus-quickstart-1.0.1*
@@ -199,9 +202,9 @@ $ ls -lah target/cassandra-quarkus-quickstart-1.0.1*
 ```
 
 
-You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html) and access the application as noted earlier.
+You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html) or [http://localhost:8080/reactive-fruits.html](http://localhost:8080/reactive-fruits.html) and access the application as noted earlier.
 
-### Create Container Images
+### Creating Container Images
 
 We'll demonstrate a few options to build container images for the application:
 
