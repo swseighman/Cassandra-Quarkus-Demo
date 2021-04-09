@@ -7,7 +7,9 @@ The main properties to configure are: `contact-points`, to access the Cassandra 
 A sample configuration should look like this:
 
 ```
-quarkus.cassandra.contact-points={cassandra_ip}:9042 quarkus.cassandra.local-datacenter={dc_name} quarkus.cassandra.keyspace={keyspace}
+quarkus.cassandra.contact-points={cassandra_ip}:9042
+quarkus.cassandra.local-datacenter={dc_name}
+quarkus.cassandra.keyspace={keyspace}
 ```
 
 **NOTE:** To configure the IP for Linux on WSL2, identify the IP by executing the following command:
