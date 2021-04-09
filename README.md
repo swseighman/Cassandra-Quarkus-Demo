@@ -1,5 +1,13 @@
 # Cassandra Client with Quarkus
 
+Apache Cassandra® is a free and open-source, distributed, wide column store, NoSQL database management system designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.
+
+In this guide, we'll demonstrate how you can create a REST service to access a Cassandra database and then create a native image executable of the application.
+
+### Credits
+This example is based on an article that appears [here](https://quarkus.io/version/1.7/guides/cassandra).
+
+
 ### Connecting to Apache Cassandra or DataStax Enterprise (DSE)
 
 The main properties to configure are: `contact-points`, to access the Cassandra database; `local-datacenter`, which is required by the driver and optionally, the `keyspace` to bind.
@@ -59,9 +67,23 @@ To build the project, run:
 ```
 $ mvn clean package
 ```
+**NOTE:** We created an `uber-jar` of the application, you can choose to create a `fast-jar` instead.
+
 To start the `jar` application, execute:
 ```
 $ java -jar ./target/cassandra-quarkus-quickstart-*-runner.jar
+__  ____  __  _____   ___  __ ____  ______
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/
+2021-04-09 13:31:59,913 INFO  [com.dat.oss.dri.int.cor.DefaultMavenCoordinates] (main) DataStax Java driver for Apache Cassandra(R) (com.datastax.oss:java-driver-core) version 4.10.0
+2021-04-09 13:31:59,952 INFO  [com.dat.oss.qua.run.int.qua.CassandraClientRecorder] (main) Enabling Cassandra metrics using Micrometer.
+2021-04-09 13:32:00,214 WARN  [io.qua.run.con.ConfigChangeRecorder] (main) Build time property cannot be changed at runtime:
+ - quarkus.package.type was 'native' at build time and is now 'uber-jar'
+2021-04-09 13:32:00,460 INFO  [io.quarkus] (main) cassandra-quarkus-quickstart 1.0.1 on JVM (powered by Quarkus 1.13.1.Final) started in 0.893s. Listening on: http://0.0.0.0:8080
+2021-04-09 13:32:00,462 INFO  [io.quarkus] (main) Profile prod activated.
+2021-04-09 13:32:00,462 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
+
 ```
 
 Or run the application in dev mode: 
@@ -70,9 +92,12 @@ $ mvn clean quarkus:dev
 ```
 Add some data to the database:
 ```
-$ curl --header "Content-Type: application/json" --request POST --data '{"name":"apple","description":"red and tasty"}' http://localhost:8080/fruits
+$ http POST http://localhost:8080/fruits name="apple" description="red and tasty"
+HTTP/1.1 204 No Content
 ```
-Then check to make certain it was posted:
+**NOTE:** These examples use [http](https://httpie.io/) but of course, `curl` will work too.
+
+Then check to make certain it posted properly:
 ```
 $ http http://localhost:8080/fruits --body
 [
@@ -96,7 +121,8 @@ You can also add fruit to the database via the UI:
 
 ![](images/Reactive-UI-2.png)
 
-You can also access the `/health` endpoint of your application to retrieve information about the connection validation status:
+### Application Health Check
+You can access the `/health` endpoint of your application to retrieve information about the connection validation status:
 
 ```
 $ http http://localhost:8080/q/health --body
@@ -128,14 +154,114 @@ $ mvn clean package -Dnative
 Once the compilation is finished, you can run the native executable by executing the following command:
 
 ```
-./target/cassandra-quarkus-quickstart-*-runner
+$ ./target/cassandra-quarkus-quickstart-*-runner
+__  ____  __  _____   ___  __ ____  ______
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/
+2021-04-09 13:34:09,037 INFO  [io.quarkus] (main) cassandra-quarkus-quickstart 1.0.1 native (powered by Quarkus 1.13.1.Final) started in 0.018s. Listening on: http://0.0.0.0:8080
+2021-04-09 13:34:09,037 INFO  [io.quarkus] (main) Profile prod activated.
+2021-04-09 13:34:09,038 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
+
 ```
+Comparing the JAR and native image file sizes:
+
+```
+$ ls -lah target/cassandra-quarkus-quickstart-1.0.1*
+-rwxr-xr-x 1 sseighma sseighma  73M Apr  9 12:44 target/cassandra-quarkus-quickstart-1.0.1-runner
+-rw-r--r-- 1 sseighma sseighma  35K Apr  9 12:42 target/cassandra-quarkus-quickstart-1.0.1.jar
+```
+Using [upx](https://upx.github.io/), you can further reduce the size of the native image executable:
+```
+$ upx -7 -k target/cassandra-quarkus-quickstart-1.0.1-runner
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2020
+UPX 3.96        Markus Oberhumer, Laszlo Molnar & John Reiser   Jan 23rd 2020
+
+        File size         Ratio      Format      Name
+   --------------------   ------   -----------   -----------
+  75751464 ->  21118728   27.88%   linux/amd64   cassandra-quarkus-quickstart-1.0.1-runner
+
+Packed 1 file.
+```
+
+Comparing once again, you can see we reduced the native image executable size from **73MB** to **21MB**.
+```
+$ ls -lah target/cassandra-quarkus-quickstart-1.0.1*
+-rwxr-xr-x 1 sseighma sseighma  21M Apr  9 12:44 target/cassandra-quarkus-quickstart-1.0.1-runner
+-rwxr-xr-x 1 sseighma sseighma  73M Apr  9 12:44 target/cassandra-quarkus-quickstart-1.0.1-runne~
+-rw-r--r-- 1 sseighma sseighma  35K Apr  9 12:42 target/cassandra-quarkus-quickstart-1.0.1.jar
+```
+
 
 You can then browse to [http://localhost:8080/fruits.html](http://localhost:8080/fruits.html) and access the application as noted earlier.
 
 ### Create Container Images
 
+There are a few options for building container images for the application.
+
+First, let's build a container using the **fat-jar** version of the application:
+
+```
+$ docker build -f src/main/docker/Dockerfile.jvm -t quarkus/cassandra-client-jvm .
+```
+Run the container:
+
+```
+$ docker run -i --rm -p 8080:8080 quarkus/cassandra-client-jvm
+exec java -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -javaagent:/opt/agent-bond/agent-bond.jar=jmx_exporter{{9779:/opt/agent-bond/jmx_exporter_config.yml}} -XX:+ExitOnOutOfMemoryError -cp . -jar /deployments/app.jar
+__  ____  __  _____   ___  __ ____  ______
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/
+2021-04-09 16:29:01,847 INFO  [com.dat.oss.dri.int.cor.DefaultMavenCoordinates] (main) DataStax Java driver for Apache Cassandra(R) (com.datastax.oss:java-driver-core) version 4.10.0
+2021-04-09 16:29:02,000 INFO  [com.dat.oss.qua.run.int.qua.CassandraClientRecorder] (main) Enabling Cassandra metrics using Micrometer.
+2021-04-09 16:29:02,354 INFO  [io.quarkus] (main) cassandra-quarkus-quickstart 1.0.1 on JVM (powered by Quarkus 1.13.1.Final) started in 0.789s. Listening on: http://0.0.0.0:8080
+2021-04-09 16:29:02,354 INFO  [io.quarkus] (main) Profile prod activated.
+2021-04-09 16:29:02,355 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
+
+```
+Notice it starts in ~**800ms**.
+
+Now let's build a container with the native image executable:
+
+```
+$ docker build -f src/main/docker/Dockerfile.native -t quarkus/cassandra-client-native .
+```
+Run the native image container:
+```
+$ docker run -i --rm -p 8080:8080 quarkus/cassandra-client-native
+__  ____  __  _____   ___  __ ____  ______
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/
+2021-04-09 16:31:10,907 INFO  [io.quarkus] (main) cassandra-quarkus-quickstart 1.0.1 native (powered by Quarkus 1.13.1.Final) started in 0.015s. Listening on: http://0.0.0.0:8080
+2021-04-09 16:31:10,907 INFO  [io.quarkus] (main) Profile prod activated.
+2021-04-09 16:31:10,907 INFO  [io.quarkus] (main) Installed features: [cassandra-client, cdi, micrometer, mutiny, resteasy, resteasy-jsonb, resteasy-mutiny, smallrye-context-propagation, smallrye-health]
+
+```
+Notice the native image version starts considerably faster at ~**15ms**.
+
+If we use the `upx` compressed version of the native image executable, the container image is reduced in size from **179MB** to **132MB**.
+```
+$ $ docker images | grep native
+quarkus/cassandra-client-native     latest    d51068444298   14 seconds ago   132MB
+```
+
+
+Another option to shrink your container images is to consider using a distroless image.  To build a distroless image, run:
 ```
 $ docker build -f src/main/docker/Dockerfile.distroless -t quarkus/cassandra-client-distroless .
 ```
 
+Here we compare the image size of each option:
+```
+$ docker images
+quarkus/cassandra-client-distroless    latest      ae519318cd36   2 hours ago    96.2MB
+quarkus/cassandra-client-native        latest      1077993b8418   2 hours ago    132MB
+quarkus/cassandra-client-jvm           latest      7043af3565af   2 hours ago    222MB
+```
+
+### Summary
+
+Accessing a Cassandra database from a client application is easy with Quarkus and the Cassandra extension, which provides configuration and native image support for the DataStax Java driver for Apache Cassandra.
