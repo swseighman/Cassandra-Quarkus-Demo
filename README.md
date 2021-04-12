@@ -7,6 +7,8 @@ In this guide, we'll demonstrate how you can create a REST service to access a C
 ### Credits
 This example is based on an article that appears [here](https://quarkus.io/version/1.7/guides/cassandra).
 
+### Preqs
+NOTE: Java 11 is used for this example, however, Java 8 would work as well with a slight adjustment to the `pom.xml`.
 
 ### Connecting to Apache Cassandra
 
@@ -60,11 +62,10 @@ Connected to Test Cluster at 127.0.0.1:9042.
 Use HELP for help.
 cqlsh> select * from k1.fruit;
 
- name   | description
---------+------------------
-  apple |    red and tasty
+ name | description
+------+-------------
 
-(4 rows)
+(0 rows)
 cqlsh> exit
 ```
 
