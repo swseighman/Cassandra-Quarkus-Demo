@@ -157,7 +157,7 @@ $ http http://localhost:8080/q/health --body
 To build a native image, execute the following command:
 
 ```
-$ mvn clean package -Dnative
+$ mvn package -Dnative
 ```
 
 Once the compilation has finished, you can run the native executable by executing the following command:
@@ -273,6 +273,99 @@ quarkus/cassandra-client-distroless    latest      ae519318cd36   2 hours ago   
 quarkus/cassandra-client-native        latest      1077993b8418   2 hours ago    132MB
 quarkus/cassandra-client-jvm           latest      7043af3565af   2 hours ago    222MB
 ```
+
+### Benchmarking Exercise
+
+Thought I would include an option to benchmark the application, primarily for fun and to understand how to create a basic benchmark test.
+
+I'll be using [wrk2](https://github.com/giltene/wrk2) for the actual benchmarks and an extension called [wrk2img](https://github.com/PPACI/wrk2img) to create some nice graphs of our benchmark results.
+
+Assuming you have both tools installed, let's get started!
+
+Included with this repo is a script called `run-test.sh` to run the `wrk` benchmark:
+```
+#!/usr/bin/env bash
+
+if [ -z "$1" ]
+then
+        echo "Oops, pass an arg with a name for output"
+        echo "Example: ./run-test.sh graalvm-jvm"
+        exit 1
+fi
+
+name="$1"
+
+echo -n "Performing benchmark tests ... "
+wrk --script post.lua --latency --rate 1000 --connections 5 --threads 2 --duration 60s http://localhost:8080/reactive-fruits.html > results/"$name"_1000.txt
+wrk --script post.lua --latency --rate 1000 --connections 5 --threads 2 --duration 60s http://localhost:8080/reactive-fruits.html > results/"$name"_1001.txt
+wrk --script post.lua --latency --rate 1000 --connections 5 --threads 2 --duration 60s http://localhost:8080/reactive-fruits.html > results/"$name"_1002.txt
+wrk --script post.lua --latency --rate 1000 --connections 5 --threads 2 --duration 60s http://localhost:8080/reactive-fruits.html > results/"$name"_final.txt
+echo " done."
+cat results/"$name"_1000.txt results/"$name"_1001.txt results/"$name"_1002.txt results/"$name"_1003.txt results/"$name"_final.txt | wrk2img --log -n "$name"-1000,"$name"-1001,"$name"-1002,"$name"-1003,"$name_final" results/"$name"-final.png  >> /dev/null
+echo ""
+echo -n "Creating graph ..."
+echo " done."
+```
+
+You can adjust the parameters of `wrk` to fit your environment. 
+
+First, let's start the application in JVM mode:
+```
+$ java -jar ./target/cassandra-quarkus-quickstart-*-runner.jar
+```
+
+It's recommended you `warm-up` the JVM by executing a few `time http` commands to access the endpoints.  Plus, the `time http` command can help you understand the time it takes to make a round trip.
+
+Example:
+```
+$ time http POST http://localhost:8080/fruits name="apple" description="red and tasty"
+HTTP/1.1 204 No Content
+
+real    0m0.155s
+user    0m0.141s
+sys     0m0.011s
+```
+After the JVM is warm, go ahead and start the test.  You'll also need to pass an argument for the output file names.  In this example, I have the application running in JVM mode, so I named the output files accordingly (`graalvm-jvm`):
+```
+$ ./run-test.sh graalvm-jvm
+Performing benchmark tests ... done.
+
+Creating graph ... done.
+```
+To view the results, check out the `.txt` files in the `results/` directory.  In addition, you'll find a `.png` file with a latency graph representation of the tests.
+
+![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/graalvm-jvm-final.png)
+
+Stop the JVM application and restart it using the native image version.
+
+```
+$ target/cassandra-quarkus-quickstart-*-runner
+```
+
+Now, re-run the benchmark test making certain to rename the output file names (in this example, `graalvm-native`):
+
+```
+$ ./run-test.sh graalvm-native
+Performing benchmark tests ... done.
+
+Creating graph ... done.
+```
+Once again, view the results in the `results/` directory and open the native image latency `.png` graph.
+
+![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/graalvm-native-final.png)
+
+Wouldn't it be helpful to compare the results of both tests together in one graph?  You're in luck, there's another script (`combine-graphs.sh`) that will combine the results from both tests into one graph.  Run the script to create the graph:
+
+```
+$ ./combine-graphs.sh
+Combining graphs ... created graph!
+Done.
+```
+Open the graph to view the combined results:
+
+![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/combined-1-final.png)
+
+NOTE: The graph reflects only the last tests (after the JVM was warm) in order to provide an accurate result. 
 
 ### Summary
 
