@@ -307,7 +307,7 @@ echo -n "Creating graph ..."
 echo " done."
 ```
 
-You can adjust the parameters of `wrk` to fit your environment. 
+You can adjust the parameters of `wrk` script to fit your environment. We're running four consecutive tests, keeping only the last test for the final graph (see below).
 
 First, let's start the application in JVM mode:
 ```
@@ -334,7 +334,7 @@ Creating graph ... done.
 ```
 To view the results, check out the `.txt` files in the `results/` directory.  In addition, you'll find a `.png` file with a latency graph representation of the tests.
 
-![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/graalvm-jvm-final.png)
+![](images/graalvm-jvm-final.png)
 
 Stop the JVM application and restart it using the native image version.
 
@@ -352,7 +352,7 @@ Creating graph ... done.
 ```
 Once again, view the results in the `results/` directory and open the native image latency `.png` graph.
 
-![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/graalvm-native-final.png)
+![](images/graalvm-native-final.png)
 
 Wouldn't it be helpful to compare the results of both tests together in one graph?  You're in luck, there's another script (`combine-graphs.sh`) that will combine the results from both tests into one graph.  Run the script to create the graph:
 
@@ -363,7 +363,7 @@ Done.
 ```
 Open the graph to view the combined results:
 
-![](//wsl$/Fedora/home/sseighma/code/graalvm/Cassandra-Quarkus-Demo/results/combined-1-final.png)
+![](images/combined-1-final.png)
 
 NOTE: The graph reflects only the last tests (after the JVM was warm) in order to provide an accurate result. 
 
